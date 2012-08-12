@@ -1,2 +1,3 @@
 html,body,#map_canvas{margin:0;padding:0;height:100%;}#map_canvas{margin-top:-20px;}
 .labels{color: red;background: white;font-size: 10px;font-weight:bold;text-align: center;border: 1px solid black;white-space: nowrap;padding:0 4px;opacity: 0.9;}
+.well-form{width:380px;position:absolute;top:50px;right:10px;z-index:4;}
