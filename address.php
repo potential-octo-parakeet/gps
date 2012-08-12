@@ -88,7 +88,7 @@ $(document).ready(function(){
 	<form class="form-horizontal" method="post" action="">	
 		<input type="hidden" id="lat" name="lat" value=""/>
 		<input type="hidden" id="lng" name="lng" value=""/>
-		<input type="hidden" id="zoom" name="zoom" value=""/>
+		<input type="hidden" id="zoom" name="zoom" value=""/>
 		<fieldset>
 			<legend>Please provide your complete address</legend>
 			<?php if(isset($is_valid) && $is_valid==false){
