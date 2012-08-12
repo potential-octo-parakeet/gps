@@ -1,0 +1,12 @@
+<?php
+class validate{
+	function cleanstr($str){
+		$str = trim($str);
+		$str = preg_replace('/\s+/',' ',$str);
+		return $str;
+	}
+	function escape_string($str){
+		return $sql->real_escape_string($str);
+	}
+}
+?>
