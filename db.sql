@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Aug 11, 2012 at 02:15 PM
+-- Generation Time: Aug 12, 2012 at 02:23 PM
 -- Server version: 5.5.20
 -- PHP Version: 5.3.10
 
@@ -37,9 +37,20 @@ CREATE TABLE IF NOT EXISTS `address` (
   `country` varchar(44) NOT NULL,
   `lat` float NOT NULL,
   `lng` float NOT NULL,
+  `zoom` int(2) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `human_id` (`human_id`,`address1`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+
+--
+-- Dumping data for table `address`
+--
+
+INSERT INTO `address` (`id`, `human_id`, `address1`, `address2`, `city`, `state`, `postal`, `country`, `lat`, `lng`, `zoom`) VALUES
+(1, 3, '', '', '', 'Bohol', '', 'Philippines', 0, 0, 0),
+(2, 3, '', '', '', 'Bohol', '', 'Philippines', 0, 0, 0),
+(3, 3, '', '', '', 'Bohol', '', 'Philippines', 0, 0, 0),
+(4, 3, 'Base 1, Workplace 2', '', 'Calape', 'Bohol', '6328', 'Philippines', 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -313,23 +324,26 @@ CREATE TABLE IF NOT EXISTS `human` (
   `email` varchar(100) NOT NULL,
   `password` varchar(32) NOT NULL,
   `gender` enum('male','female') NOT NULL,
+  `reg_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `timezone` varchar(6) NOT NULL,
   `verified` tinyint(1) NOT NULL DEFAULT '0',
+  `last_page` varchar(64) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `fb_id_2` (`fb_id`),
   KEY `fb_id` (`fb_id`,`firstname`,`lastname`),
   KEY `email` (`email`),
   KEY `password` (`password`),
   KEY `verified` (`verified`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `human`
 --
 
-INSERT INTO `human` (`id`, `fb_id`, `firstname`, `middlename`, `lastname`, `email`, `password`, `gender`, `timezone`, `verified`) VALUES
-(1, '1445812408', 'May', '', 'Bases', 'charm_rain08@yahoo.com', 'e43cf90e1d585c3b690a805b111d24e5', 'male', '8', 0),
-(2, '774651102', 'Mar', '', 'Cejas', 'mvcejas@gmail.com', 'e11efe1aa96893ffe5ed0d496da14fb2', 'male', '8', 0);
+INSERT INTO `human` (`id`, `fb_id`, `firstname`, `middlename`, `lastname`, `email`, `password`, `gender`, `reg_date`, `last_update`, `timezone`, `verified`, `last_page`) VALUES
+(1, '', 'Mar', '', 'Cejas', 'mvcejas@gmail.com', '4297f44b13955235245b2497399d7a93', 'male', '2012-08-12 12:56:08', '2012-08-12 12:56:08', '', 0, ''),
+(2, '', 'Mar', '', 'Cejas', 'mvcejas@gmail.com', '0775d3c1441ed51591b88bf73cd62950', 'male', '2012-08-12 13:01:43', '2012-08-12 13:01:43', '', 0, ''),
+(3, '', 'Mar', '', 'Cejas', 'mvcejas@gmail.com', '8ce87b8ec346ff4c80635f667d1592ae', 'male', '2012-08-12 13:04:45', '2012-08-12 14:05:46', '', 0, '/address.php');
 
 -- --------------------------------------------------------
 
