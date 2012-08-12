@@ -14,11 +14,11 @@ function init(){
 		panControl: false,
 		streetViewControl: false,		
 		mapTypeControlOptions: {
-			position: google.maps.ControlPosition.TOP_RIGHT,
+			position: google.maps.ControlPosition.TOP_LEFT,
 			mapTypeIds: [google.maps.MapTypeId.HYBRID,google.maps.MapTypeId.ROADMAP],
 		},
 		zoomControlOptions: {
-			position: google.maps.ControlPosition.RIGHT_TOP,
+			position: google.maps.ControlPosition.LEFT_TOP,
 		},
 	};	
 	map 	= new google.maps.Map(document.getElementById('map_canvas'),myOptions);
@@ -41,7 +41,7 @@ function init(){
 		marker.setPosition(event.latLng);
 		log(event.latLng.Xa,event.latLng.Ya);
 	});
-	window.setTimeout(getUsersLocation,1000);
+	window.setTimeout(getUsersLocation,100);
 }
 function getUsersLocation(){
 	$.get('ipinfo.php',function(r){
@@ -51,8 +51,8 @@ function getUsersLocation(){
 			map.panTo(pos);
 			marker.setMap(map);
 			log(r.latitude,r.longitude);			
-			document.getElementById('country').value=r.countryName;		
-			document.getElementById('country_sn').value=r.countryCode;
+			document.getElementById('country').value=r.countryName;	
+			document.getElementById('zoom').value=map.getZoom();
 		}
 	},'json');
 	
