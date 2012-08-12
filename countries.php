@@ -240,10 +240,13 @@ $countries = array(
 	"ZM" => "Zambia",
 	"ZW" => "Zimbabwe"
 );
-$list = array();
-foreach($countries as $key=>$val){
-	array_push($list,array('short_name'=>$key,'long_name'=>$val));
+
+if(isset($_GET['json'])){
+	$list = array();
+	foreach($countries as $key=>$val){
+		array_push($list,array('short_name'=>$key,'long_name'=>$val));
+	}
+	header("content-type:application/json");
+	echo json_encode($list);
 }
-header("content-type:application/json");
-echo json_encode($list);
 ?>
