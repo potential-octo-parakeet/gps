@@ -3,6 +3,7 @@
 	require 'config.php';
 	require 'validation.class';
 	include 'countries.php';
+
 	$ID = $_SESSION['ID'];
 	
 	$sql->query("UPDATE human SET last_page='".$_SERVER['PHP_SELF']."' WHERE id='$ID'") or die($sql->error);
@@ -14,6 +15,9 @@
 		$state 	  = validate::cleanstr($_POST['state']);
 		$postal   = validate::cleanstr($_POST['postal']);
 		$country  = ucwords(strtolower(validate::cleanstr($_POST['country'])));
+		$lat      = $_POST['lat'];
+		$lng      = $_POST['lng'];
+		$zoom     = $_POST['zoom'];
 		$is_valid = true;
 		$errors   = array();
 		
@@ -45,8 +49,8 @@
 			$state   = $sql->real_escape_string($state);
 			$postal  = $sql->real_escape_string($postal);
 			$country = $sql->real_escape_string($country);
-			$sql->query("INSERT INTO address(human_id,address1,address2,city,state,postal,country) VALUES('$ID','$address1','$address2','$city','$state','$postal','$country');");
-			header("location:address-step-2.php");
+			$sql->query("INSERT INTO address(human_id,address1,address2,city,state,postal,country,lat,lng,zoom) VALUES('$ID','$address1','$address2','$city','$state','$postal','$country','$lat','$lng','$zoom');");
+			header("location:welcome.php");
 		}
 	}
 ?>
@@ -65,6 +69,8 @@
 <script src="/js/map.js"></script>
 <script>
 $(document).ready(function(){
+	getUsersLocation();
+	
 	$('#country').typeahead({
 		source : function(typeahead,query){
 			return $.get('countries.php',{json:true},function(data){
@@ -83,13 +89,13 @@ $(document).ready(function(){
 </head>
 <body>
 <?php include 'header.inc'?>
-<div id="map_canvas"></div>
-<div class="well well-form">
+			
+<div class="well well-form">	
 	<form class="form-horizontal" method="post" action="">	
 		<input type="hidden" id="lat" name="lat" value=""/>
 		<input type="hidden" id="lng" name="lng" value=""/>
-		<input type="hidden" id="zoom" name="zoom" value=""/>
-		<fieldset>
+		<input type="hidden" id="zoom" name="zoom" value=""/>	
+		<fieldset id="addinfo">
 			<legend>Please provide your complete address</legend>
 			<?php if(isset($is_valid) && $is_valid==false){
 				echo '<div class="alert alert-error fade in">';
@@ -102,13 +108,13 @@ $(document).ready(function(){
 			<div class="control-group">
 				<label class="control-label">Street / Barangay</label>
 				<div class="controls">
-					<input type="text" class="input input-large map_addr" name="address1" value="<?php echo isset($address1) ? $address1 : null;?>"/>
+					<input type="text" class="input input-large" name="address1" value="<?php echo isset($address1) ? $address1 : null;?>"/>
 				</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label">Apartment / House #</label>
 				<div class="controls">
-					<input type="text" class="input input-large map_addr" name="address2" value="<?php echo isset($address2) ? $address2 : null;?>"/>
+					<input type="text" class="input input-large" name="address2" value="<?php echo isset($address2) ? $address2 : null;?>"/>
 				</div>
 			</div>			
 			<div class="control-group">
@@ -128,7 +134,7 @@ $(document).ready(function(){
 			<div class="control-group">
 				<label class="control-label">Zip / Postal</label>
 				<div class="controls">
-					<input type="text" class="input input-large map_addr" name="postal" value="<?php echo isset($postal) ? $postal : null;?>"/>
+					<input type="text" class="input input-large" name="postal" value="<?php echo isset($postal) ? $postal : null;?>"/>
 				</div>
 			</div>
 			
@@ -140,10 +146,18 @@ $(document).ready(function(){
 			</div>	
 			
 			<div class="form-actions">
-				<button type="submit" class="btn btn-info" name="continue">Continue <i class="icon-white icon-chevron-right"></i></button>
-			</div>
+				<button type="button" class="btn btn-info" onclick="showMap();$('#addinfo').hide();$('#mapinfo').show();">Review & Continue <i class="icon-white icon-map-marker"></i></button>
+			</div>			
 		</fieldset>
-	</form>
+		<fieldset id="mapinfo" class="hide">
+			<legend>Does your location accurate? If not, move the marker to the right location.</legend>
+			<div class="control-group">
+				<div id="map_canvas"></div>
+			</div>
+			<button type="button" class="btn btn-info" onclick="$('#mapinfo').hide();$('#addinfo').show();">Edit <i class="icon-white icon-edit"></i></button> &nbsp; <button type="submit" id="continue" class="btn btn-success" name="continue">Save and Continue <i class="icon-white icon-chevron-right"></i></button>
+		</fieldset>
+	</form>	
 </div>
+
 </body>
 </html>

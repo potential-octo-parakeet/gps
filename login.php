@@ -16,7 +16,8 @@
 <meta charset="utf-8" />
 <meta name="description" content="Login to GPS Tracker Online."/>
 <title>Account Login</title>
-<link rel="stylesheet" href="http://www.1bohol.com/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/css/custom.css"/>
 </head>
 <body>
 <?php include 'header.inc' ?>

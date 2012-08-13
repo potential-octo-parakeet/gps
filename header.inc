@@ -1,7 +1,7 @@
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="container">
-		<?php if(isset($_SESSION['id'])):?>
+		<?php if(isset($_SESSION['ID'])):?>
 		<form action="search.php" method="GET" class="navbar-search">
 			<input type="text" name="q" class="search-query typeahead span6" placeholder="Search..."/>
 		</form>

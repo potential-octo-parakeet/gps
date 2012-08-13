@@ -1,82 +1,83 @@
 <?php
-	session_start();
-	$geo = "http://api.ipinfodb.com/v3/ip-city/?key=bc866c34b4048322ad585dc8fb8d2c08f5b4a9c24e3e3e91592948654ef7fa3b&ip=".$_SERVER['REMOTE_ADDR']."&format=json";
-	$geo = file_get_contents($geo);
-	$geo = json_decode($geo);	
+	require 'session.inc';
+	require 'config.php';
+	require 'validation.class';
+	include 'countries.php';
+
+	$ID = $_SESSION['ID'];
 	
+	$sql->query("UPDATE human SET last_page='".$_SERVER['PHP_SELF']."' WHERE id='$ID'") or die($sql->error);
 	
-	if($geo->statusCode=='OK'){
-		$lat = $geo->latitude;
-		$lng = $geo->longitude;
+	if(isset($_POST['continue'])){
+		$address1 = validate::cleanstr($_POST['address1']);
+		$address2 = validate::cleanstr($_POST['address2']);
+		$city     = validate::cleanstr($_POST['city']);
+		$state 	  = validate::cleanstr($_POST['state']);
+		$postal   = validate::cleanstr($_POST['postal']);
+		$country  = ucwords(strtolower(validate::cleanstr($_POST['country'])));
+		$is_valid = true;
+		$errors   = array();
+		
+		if(strlen($address1)<3){
+			$is_valid = false;
+			array_push($errors,'Error: Street, invalid form of characters.');
+		}
+		if(strlen($city)<2){
+			$is_valid = false;
+			array_push($errors,'Error: City, invalid form of characters.');
+		}	
+		if(strlen($state)<1){
+			$is_valid = false;
+			array_push($errors,'Error: State, invalid form of characters.');
+		}	
+		if(!preg_match('/^([0-9]{4,9})$/',$postal)){
+			$is_valid = false;
+			array_push($errors,'Error: Postal, invalid form of characters.');
+		}		
+		if(!in_array($country,$countries)){
+			$is_valid = false;
+			array_push($errors,'Error: Country not on the list.');
+		}
+		
+		if($is_valid){
+			$address1= $sql->real_escape_string($address1);
+			$address2= $sql->real_escape_string($address2);
+			$city    = $sql->real_escape_string($city);
+			$state   = $sql->real_escape_string($state);
+			$postal  = $sql->real_escape_string($postal);
+			$country = $sql->real_escape_string($country);
+			$sql->query("INSERT INTO address(human_id,address1,address2,city,state,postal,country) VALUES('$ID','$address1','$address2','$city','$state','$postal','$country');");
+			header("location:address-step-2.php");
+		}
 	}
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>GOOGLE MAP API</title>
-<meta name="description" content="">
+<meta charset="utf-8"/>
+<title>GPS Tracker Home</title>
 <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/css/bootstrap.min.css"/>
 <link rel="stylesheet" href="/css/custom.css"/>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/js/bootstrap.min.js"></script>
+<script src="/js/bootstrap-typeahead.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+<script src="/js/markerwithlabel.js"></script>
+<script src="/js/map.js"></script>
 <script>
-window.onload = initialize;
-var map, markers = [], infowindow, bounds;
-function initialize(){
-	var myOptions = {
-		zoom: 8,
-		center: new google.maps.LatLng(<?php echo $lat?>,<?php echo $lng?>),
-		mapTypeId: google.maps.MapTypeId.ROADMAP,
-		panControl: false,
-		streetViewControl: false,		
-		mapTypeControlOptions: {
-			position: google.maps.ControlPosition.TOP_RIGHT,
-			mapTypeIds: [google.maps.MapTypeId.HYBRID,google.maps.MapTypeId.ROADMAP],
-		},
-		zoomControlOptions: {
-			position: google.maps.ControlPosition.RIGHT_TOP,
-		},
-	};	
-	map = new google.maps.Map(document.getElementById('map_canvas'),myOptions);	
-}
-
-function setLocation(lat,lng,title,text,icon){	
-	var marker = new google.maps.Marker({
-		icon: icon,
-		position: new google.maps.LatLng(lat,lng),
-		map: map,
-		title: title,
-	});
-	
-	infowindow = new google.maps.InfoWindow({
-		content: text,
-        size: new google.maps.Size(10,10)
-    });
-	
-	google.maps.event.addListener(marker,'click',function(){
-		if(infowindow) infowindow.close();
-		infowindow = new google.maps.InfoWindow({content:text});
-		infowindow.open(map,marker);
-	});
-	map.setCenter(new google.maps.LatLng(lat,lng));
-}
-
-function getLoc(){
-	$.getJSON('locator.php',function(data){
-		$.each(data,function(c,a){
-			setLocation(a.lat,a.lng,a.title,a.text,a.icon);
-		});		
-	});
-}
 $(document).ready(function(){
-	$('form.navbar-search').submit(function(){
-		$.getJSON('search.php',{q:this.q.value},function(r){
-			$.each(r,function(a,b){
-				setLocation(b.lat,b.lng,b.title,b.text,b.icon);
+	$('#country').typeahead({
+		source : function(typeahead,query){
+			return $.get('countries.php',{json:true},function(data){
+				console.log(data);
+				return typeahead.process(data);
 			});
-		});
-		return false;
+		},
+		property: 'long_name',
+		onselect: function(obj){
+			$('#country_sn').val(obj.short_name);
+			console.log(obj);
+		},
 	});
 });
 </script>
@@ -84,53 +85,66 @@ $(document).ready(function(){
 <body>
 <?php include 'header.inc'?>
 <div id="map_canvas"></div>
-
-<form action="" method="post" class="well form-horizontal" style="margin:60px auto;width:500px;">
-	<fieldset>
-		<legend>Your address information.</legend>		
-		<div class="control-group">
-			<label class="control-label">Address Line 1</label>
-			<div class="controls">
-				<input type="text" name="address" class="input input-xlarge map_addr"/>
+<div class="well well-form">
+	<form class="form-horizontal" method="post" action="">	
+		<input type="hidden" id="lat" name="lat" value=""/>
+		<input type="hidden" id="lng" name="lng" value=""/>
+		<input type="hidden" id="zoom" name="zoom" value=""/>
+		<fieldset>
+			<legend>Please provide your complete address</legend>
+			<?php if(isset($is_valid) && $is_valid==false){
+				echo '<div class="alert alert-error fade in">';
+				echo '<a href="#" class="close" data-dismiss="alert">&times;</a>';
+				foreach($errors as $e){
+					echo $e.'<br/>';
+				}
+				echo '</div>';
+			}?>
+			<div class="control-group">
+				<label class="control-label">Street / Barangay</label>
+				<div class="controls">
+					<input type="text" class="input input-large map_addr" name="address1" value="<?php echo isset($address1) ? $address1 : null;?>"/>
+				</div>
 			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">Address Line 2</label>
-			<div class="controls">
-				<input type="text" name="address" class="input input-xlarge map_addr"/>
+			<div class="control-group">
+				<label class="control-label">Apartment / House #</label>
+				<div class="controls">
+					<input type="text" class="input input-large map_addr" name="address2" value="<?php echo isset($address2) ? $address2 : null;?>"/>
+				</div>
+			</div>			
+			<div class="control-group">
+				<label class="control-label">City / Town</label>
+				<div class="controls">
+					<input type="text" class="input input-large map_addr" name="city" value="<?php echo isset($city) ? $city : null;?>"/>
+				</div>
+			</div>		
+			
+			<div class="control-group">
+				<label class="control-label">State / Province</label>
+				<div class="controls">
+					<input type="text" class="input input-large map_addr" name="state" value="<?php echo isset($state) ? $state : null;?>"/>
+				</div>
 			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">Town / City</label>
-			<div class="controls">
-				<input type="text" name="address" class="input input-large map_addr"/>
+			
+			<div class="control-group">
+				<label class="control-label">Zip / Postal</label>
+				<div class="controls">
+					<input type="text" class="input input-large map_addr" name="postal" value="<?php echo isset($postal) ? $postal : null;?>"/>
+				</div>
 			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">State / Province</label>
-			<div class="controls">
-				<input type="text" name="address" class="input input-large map_addr"/>
+			
+			<div class="control-group">
+				<label class="control-label">Country</label>
+				<div class="controls">
+					<input type="text" id="country" class="map_addr" name="country" value="<?php echo isset($country) ? $country : null;?>" autocomplete="off"/>
+				</div>
+			</div>	
+			
+			<div class="form-actions">
+				<button class="btn" onclick="showMap();">Show Map</button> &nbsp; <button type="submit" class="btn btn-info" name="continue">Continue <i class="icon-white icon-chevron-right"></i></button>
 			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">Postal / Zip</label>
-			<div class="controls">
-				<input type="text" name="address" class="input input-small map_addr"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">Country</label>
-			<div class="controls">
-				<input type="text" name="address" class="input input-large map_addr"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<div class="controls"><button class="btn" onclick="showMap();return false;">Show on map</button></div>
-		</div>		
-		<div class="form-actions">
-			<button class="btn btn-primary" style="letter-spacing:2px;">Continue &raquo;</button>
-		</div>
-	</fieldset>
-</form>
+		</fieldset>
+	</form>
+</div>
 </body>
 </html>
