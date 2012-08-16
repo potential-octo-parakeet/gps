@@ -65,7 +65,7 @@
 <script src="/js/markerwithlabel.js"></script>
 <script src="/js/map.js"></script>
 <script>
-$(document).ready(function(){
+$(document).ready(function(){	
 	$('#country').typeahead({
 		source : function(typeahead,query){
 			return $.get('countries.php',{json:true},function(data){
@@ -83,15 +83,11 @@ $(document).ready(function(){
 </script>
 </head>
 <body>
-<?php include 'header.inc'?>
-<div id="map_canvas"></div>
-<div class="well well-form">
-	<form class="form-horizontal" method="post" action="">	
-		<input type="hidden" id="lat" name="lat" value=""/>
-		<input type="hidden" id="lng" name="lng" value=""/>
-		<input type="hidden" id="zoom" name="zoom" value=""/>
+<div id="map_canvas" style="height:1000px;margin:0;"></div>
+<div class="well well-form" style="position:absolute;top:30px;right:5px;">
+	<form class="form-horizontal" method="post" action="signup.php">	
 		<fieldset>
-			<legend>Please provide your complete address</legend>
+			<legend>Sign Up</legend>
 			<?php if(isset($is_valid) && $is_valid==false){
 				echo '<div class="alert alert-error fade in">';
 				echo '<a href="#" class="close" data-dismiss="alert">&times;</a>';
@@ -101,47 +97,42 @@ $(document).ready(function(){
 				echo '</div>';
 			}?>
 			<div class="control-group">
-				<label class="control-label">Street / Barangay</label>
+				<label class="control-label">First Name</label>
 				<div class="controls">
-					<input type="text" class="input input-large map_addr" name="address1" value="<?php echo isset($address1) ? $address1 : null;?>"/>
+					<input type="text" class="input input-large map_addr" name="firstname" value="<?php echo isset($firstname) ? $firstname : null;?>"/>
 				</div>
 			</div>
+	
 			<div class="control-group">
-				<label class="control-label">Apartment / House #</label>
+				<label class="control-label">Last Name</label>
 				<div class="controls">
-					<input type="text" class="input input-large map_addr" name="address2" value="<?php echo isset($address2) ? $address2 : null;?>"/>
-				</div>
-			</div>			
-			<div class="control-group">
-				<label class="control-label">City / Town</label>
-				<div class="controls">
-					<input type="text" class="input input-large map_addr" name="city" value="<?php echo isset($city) ? $city : null;?>"/>
-				</div>
-			</div>		
-			
-			<div class="control-group">
-				<label class="control-label">State / Province</label>
-				<div class="controls">
-					<input type="text" class="input input-large map_addr" name="state" value="<?php echo isset($state) ? $state : null;?>"/>
+					<input type="text" class="input input-large map_addr" name="lastname" value="<?php echo isset($lastname) ? $lastname : null;?>"/>
 				</div>
 			</div>
 			
 			<div class="control-group">
-				<label class="control-label">Zip / Postal</label>
+				<label class="control-label">Email</label>
 				<div class="controls">
-					<input type="text" class="input input-large map_addr" name="postal" value="<?php echo isset($postal) ? $postal : null;?>"/>
+					<input type="text" class="input input-large map_addr" name="email1" value="<?php echo isset($email1) ? $email1 : null;?>"/>
 				</div>
 			</div>
 			
 			<div class="control-group">
-				<label class="control-label">Country</label>
+				<label class="control-label">Retype Email</label>
 				<div class="controls">
-					<input type="text" id="country" class="map_addr" name="country" value="<?php echo isset($country) ? $country : null;?>" autocomplete="off"/>
+					<input type="text" class="input input-large map_addr" name="email2" value="<?php echo isset($email2) ? $email2 : null;?>"/>
 				</div>
-			</div>	
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label">Password</label>
+				<div class="controls">
+					<input type="password" class="input input-large map_addr" name="password" value="<?php echo isset($password) ? $password : null;?>"/>
+				</div>
+			</div>
 			
 			<div class="form-actions">
-				<button class="btn" onclick="showMap();">Show Map</button> &nbsp; <button type="submit" class="btn btn-info" name="continue">Continue <i class="icon-white icon-chevron-right"></i></button>
+				<button type="submit" class="btn btn-info" name="signup">Continue <i class="icon-white icon-chevron-right"></i></button>
 			</div>
 		</fieldset>
 	</form>

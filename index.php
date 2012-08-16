@@ -1,57 +1,17 @@
-<?php
-	session_start();
-	require 'config.php';
-	require 'validation.class';
-	
-	if(isset($_POST['signup'])){
-		$firstname 	= validate::cleanstr($_POST['firstname']);
-		$lastname 	= validate::cleanstr($_POST['lastname']);
-		$email1		= validate::cleanstr($_POST['email1']);
-		$email2		= validate::cleanstr($_POST['email2']);
-		$password	= $_POST['password'];
-		$is_valid	= true;
-		$errors     = array();
-		$filtername = '/^[a-zA-Z 0-9\.\ñ\Ñ]{2,}$/';
-		$filteremail= '/^([a-zA-Z 0-9\-\_\.]{2,255})+\@+([a-zA-Z 0-9\-\_\.]{2,255})+\.+([a-zA-Z]{2,5})$/';
-		
-		if(!preg_match($filtername,$firstname)){
-			$is_valid = false;
-			array_push($errors,'Invalid first name.');
-		}
-		if(!preg_match($filtername,$lastname)){
-			$is_valid = false;
-			array_push($errors,'Invalid first name.');
-		}
-		if(!preg_match($filteremail,$email1) || $email1!==$email2){
-			$is_valid = false;
-			array_push($errors,'Invalid email or email did not match.');
-		}
-		if(strlen($password)<6){
-			$is_valid = false;
-			array_push($errors,'Password too short.');
-		}
-		
-		if($is_valid){
-			$firstname  = $sql->real_escape_string($firstname);
-			$lastname	= $sql->real_escape_string($lastname);
-			$email		= $sql->real_escape_string($email1);
-			$sql->query("INSERT INTO human(firstname,lastname,email,password,reg_date) 
-						VALUES('$firstname','$lastname','$email',MD5('$password'),NOW());") or die($sql->error);
-			$_SESSION['ID'] = $sql->query("SELECT id FROM human WHERE email='$email' AND password=MD5('$password');")->fetch_object()->id;
-			header("location:address.php");
-		}
-	}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <title>GPS Tracker Home</title>
-<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/css/bootstrap.min.css"/>
-<link rel="stylesheet" href="/css/custom.css"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<link href="/css/custom.css" rel="stylesheet"/>
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/css/bootstrap-combined.min.css" rel="stylesheet"/>
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/js/bootstrap.min.js"></script>
-
 </head>
 <body>
 <?php include 'header.inc'?>

@@ -1,9 +1,5 @@
 <?php
-	session_start();
-	// if session already started, then go to home
-	if(!isset($_SESSION['ID']))
-	header("location:login.php");
-	// require config and include class
+	require 'session.inc';
 	require 'config.php';
 	require 'facebook_config.php';
 ?>

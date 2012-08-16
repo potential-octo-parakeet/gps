@@ -1,8 +1,7 @@
 <?php
 	session_start();
 	// if session already started, then go to home
-	if(isset($_SESSION['ID']))
-	header("location:home.php");
+	if(isset($_SESSION['ID'])) header("location:home.php");
 	// require config and include class
 	require 'facebook_config.php';	
 	require 'config.php';
@@ -14,7 +13,6 @@
 	$lastname  = $fb['last_name'];
 	$middlename= isset($fb['middle_name']) ? $fb['middle_name'] : '';
 	$email 	   = $fb['email'];
-	$password  = md5(time());
 	// if found user
 	if($fb_id){
 		try{
@@ -22,7 +20,7 @@
 			$human_record = $sql->query("SELECT id FROM human WHERE fb_id='".$fb_id."'")->num_rows;
 			if($human_record==0){
 				// insert human info
-				$sql->query("INSERT INTO human(fb_id,firstname,lastname,middlename,email,password) VALUES('".$fb_id."','".$firstname."','".$lastname."','".$middlename."','".$email."','".$password."')");
+				$sql->query("INSERT INTO human(fb_id,firstname,lastname,middlename,email,password,reg_date) VALUES('$fb_id','$firstname','$lastname','$middlename','$email',MD5(NOW()),NOW())");
 			}
 			// get id and set session, ready...
 			$_SESSION['ID'] = $sql->query("SELECT id FROM human WHERE email='".$email."' LIMIT 1")->fetch_object()->id;

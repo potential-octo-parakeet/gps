@@ -1,16 +1,30 @@
-<div class="navbar">
-	<div class="navbar-inner">
-		<div class="container">
-		<?php if(isset($_SESSION['ID'])):?>
-		<form action="search.php" method="GET" class="navbar-search">
-			<input type="text" name="q" class="search-query typeahead span6" placeholder="Search..."/>
-		</form>
-		<?php else:?>
-		<ul class="nav">
-			<li><a href="login.php">Start using Tartey</a></li>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+	<div class="container-fluid">
+	  <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+	  </a>
+	  <a class="brand" href="/">Project name</a>
+	  <div class="btn-group pull-right">
+		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+		  <i class="icon-user"></i> Username
+		  <span class="caret"></span>
+		</a>
+		<ul class="dropdown-menu">
+		  <li><a href="#">Profile</a></li>
+		  <li class="divider"></li>
+		  <li><a href="logout.php">Sign Out</a></li>
 		</ul>
-		<?php endif;?>
-        <h1 class="pull-right"><a class="brand" href="/" title="Go To Home Page">Tartey</a></h1>
-		</div>
+	  </div>
+	  <div class="nav-collapse">
+		<ul class="nav">
+		  <li class="active"><a href="#">Home</a></li>
+		  <li><a href="#about">Ads</a></li>
+		  <li><a href="#contact">Post</a></li>
+		</ul>
+	  </div><!--/.nav-collapse -->
 	</div>
+  </div>
 </div>
