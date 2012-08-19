@@ -21,7 +21,15 @@
 	  <div class="nav-collapse">
 		<ul class="nav">
 		  <li class="active"><a href="#">Home</a></li>
-		  <li><a href="#about">Ads</a></li>
+		  <li class="divider-vertical"></li>
+		  <li><a href="#about">Jobs</a></li>
+		  <li class="divider-vertical"></li>
+		  <li><a href="#about">Services</a></li>
+		  <li class="divider-vertical"></li>
+		  <li><a href="directory.php">Directory</a></li>
+		  <li class="divider-vertical"></li>
+		  <li><a href="#about">Classified Ads</a></li>
+		  <li class="divider-vertical"></li>
 		  <li><a href="post.php">Post</a></li>
 		</ul>
 	  </div><!--/.nav-collapse -->
